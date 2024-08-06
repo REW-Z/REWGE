@@ -1,0 +1,15 @@
+# 忽略DEVLOG文件
+DEVLOG.md
+
+# 忽略Graph目录
+*.Graph/
+REWGraph.4A6210DB/
+
+# 忽略vs目录
+.vs/
+
+# 忽略Resources目录
+Resources/
+
+# 忽略DEBUG目录
+Debug/
