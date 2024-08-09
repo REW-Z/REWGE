@@ -2,6 +2,16 @@
 
 
 
+class Frustum
+{
+public:
+	rew::Plane frustumPlanes[6];
+public:
+	Frustum();
+	void UpdateFrustum(glm::mat4 matVP);
+	bool IsInFrustum(rew::AABB& aabb);
+};
+
 
 class Camera: public Behaviour
 {
@@ -14,9 +24,11 @@ public:
 
 	glm::mat4 v_mat_tmp;
 	glm::mat4 p_mat_tmp;
+	Frustum frustum;
 
 	bool vMatDirty;
 	bool pMatDirty;
+	bool frustumDirty;
 public:
 	Camera();
 	virtual void Init() override;
@@ -38,8 +50,8 @@ public:
 	glm::mat4 GetMatrixVP();
 
 	//IsInFrustum
-	rew::Plane frustumPlanes[6];
-	void CalculateFrustumPlanes();
+	Frustum* GetFrustum();
+	void UpdateFrustum();
 	bool IsInFrustum(rew::AABB& aabb);
 
 

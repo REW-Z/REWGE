@@ -174,8 +174,10 @@ glm::vec3 Transform::worldEularAngles()
 	return glm::eulerAngles(this->worldRotation()) * rad2deg;
 }
 
+
 glm::mat4 Transform::worldScale()
 {
+	//参照Unity，用逆旋转矩阵和"旋转缩放矩阵"求世界旋转。    
 	glm::mat4 invRot;
 	invRot = glm::mat4_cast(glm::inverse(worldRotation()));
 	glm::mat4 scaleAndRot = worldRotationAndScale();
@@ -186,6 +188,7 @@ glm::mat4 Transform::worldScale()
 
 glm::mat4 Transform::worldRotationAndScale()
 {
+	//参照Unity，实现"旋转缩放矩阵"计算。  
 	glm::mat4 scale = glm::scale(glm::mat4(1.0f), local_scale);
 
 	glm::mat4 rotation = glm::mat4_cast(local_rotation);
@@ -301,7 +304,7 @@ void Transform::SetTransformDirty()
 {
 	isTransformDirty = true;
 
-	//Childs
+	//Childs Dirty  
 	std::vector<Transform*>::iterator end = children.end();
 	for (std::vector<Transform*>::iterator it = children.begin(); it != end; ++it)
 	{

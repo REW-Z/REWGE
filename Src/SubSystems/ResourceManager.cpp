@@ -251,7 +251,7 @@ GameObject* ResourceImporter::ImportObjModel(std::string filePath)
 	GameObject& rootObject = GameObjectUtility::CreateGameObject(string(filePath) + ".gameobject");
 	
 	//default shader
-	MaterialShader* defaultShader = ResourceManager::Load(TypeEnum::TYPE_MaterialShader, "Shaders\\BlinnPhong") as (MaterialShader);
+	MaterialShader* defaultShader = ResourceManager::Load(TypeEnum::TYPE_MaterialShader, "Src\\Shaders\\BlinnPhong") as (MaterialShader);
 
 	//meshes
 	for (size_t i = 0; i < modelImporter._meshes.size(); ++i)

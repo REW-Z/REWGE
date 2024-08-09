@@ -43,8 +43,59 @@
 
 #include "Camera.h"
 
+// --------------------------------- FRUSTUM ------------------------------------
 
 
+Frustum::Frustum() {}
+void Frustum::UpdateFrustum(glm::mat4 VP)
+{
+	glm::vec4 planes[6];
+
+	//// 提取平面
+	VP = glm::transpose(VP);
+	// Left
+	planes[0] = VP[3] + VP[0];
+	// Right
+	planes[1] = VP[3] - VP[0];
+	// Bottom
+	planes[2] = VP[3] + VP[1];
+	// Top
+	planes[3] = VP[3] - VP[1];
+	// Near
+	planes[4] = VP[3] + VP[2];
+	// Far
+	planes[5] = VP[3] - VP[2];
+
+
+	for (int i = 0; i < 6; i++) {
+		glm::vec3 normal = glm::vec3(planes[i]); // 平面的法向量部分
+		float length = glm::length(normal); // 计算法向量长度
+		normal /= length; // 规范化法向量
+		float distance = planes[i].w / length; // 计算距离
+
+		frustumPlanes[i].normal = RewVec3(normal);
+		frustumPlanes[i].distance = distance;
+	}
+}
+
+bool Frustum::IsInFrustum(rew::AABB& aabb)
+{
+	for (int i = 0; i < 6; i++) {
+		rew::Vector3 normal = frustumPlanes[i].normal;
+		float distance = frustumPlanes[i].distance;
+
+		rew::Vector3 positiveVertex = aabb.center + rew::Vector3(
+			normal.x > 0 ? aabb.half_length.x : -aabb.half_length.x,
+			normal.y > 0 ? aabb.half_length.y : -aabb.half_length.y,
+			normal.z > 0 ? aabb.half_length.z : -aabb.half_length.z
+		);
+
+		if (rew::Vector3::Dot(normal, positiveVertex) + distance < 0) {
+			return false;
+		}
+	}
+	return true;
+}
 
 // --------------------------------- CAMERA ------------------------------------
 
@@ -77,6 +128,7 @@ void Camera::SetCameraDirty()
 {
 	vMatDirty = true;
 	pMatDirty = true;
+	frustumDirty = true;
 }
 
 //V视图变换矩阵
@@ -154,100 +206,30 @@ glm::mat4 Camera::GetMatrixVP()
 	return GetMatrixP() * GetMatrixV();
 }
 
-void Camera::CalculateFrustumPlanes()
+Frustum* Camera::GetFrustum()
 {
-	glm::vec4 planes[6];
+	if (frustumDirty)
+	{
+		UpdateFrustum(); 
 
-	//// 提取平面
-	glm::mat4 VP = GetMatrixP() * GetMatrixV(); // 确保顺序为投影 * 视图
-	VP = glm::transpose(VP);
-	// Left
-	planes[0] = VP[3] + VP[0];
-	// Right
-	planes[1] = VP[3] - VP[0];
-	// Bottom
-	planes[2] = VP[3] + VP[1];
-	// Top
-	planes[3] = VP[3] - VP[1];
-	// Near
-	planes[4] = VP[3] + VP[2];
-	// Far
-	planes[5] = VP[3] - VP[2];
-
-
-	//// 提取平面
-	//glm::mat4 VP = GetMatrixP() * GetMatrixV(); // 确保顺序为投影 * 视图
-	//// 左平面
-	//planes[0] = glm::vec4(
-	//	VP[0][3] + VP[0][0],
-	//	VP[1][3] + VP[1][0],
-	//	VP[2][3] + VP[2][0],
-	//	VP[3][3] + VP[3][0]);
-	//// 右平面
-	//planes[1] = glm::vec4(
-	//	VP[0][3] - VP[0][0], 
-	//	VP[1][3] - VP[1][0],
-	//	VP[2][3] - VP[2][0],
-	//	VP[3][3] - VP[3][0]);
-	//// 底平面
-	//planes[2] = glm::vec4(
-	//	VP[0][3] + VP[0][1], 
-	//	VP[1][3] + VP[1][1],
-	//	VP[2][3] + VP[2][1], 
-	//	VP[3][3] + VP[3][1]);
-	//// 顶平面
-	//planes[3] = glm::vec4(
-	//	VP[0][3] - VP[0][1],
-	//	VP[1][3] - VP[1][1],
-	//	VP[2][3] - VP[2][1],
-	//	VP[3][3] - VP[3][1]);
-	//// 近平面
-	//planes[4] = glm::vec4(
-	//	VP[0][3] + VP[0][2],
-	//	VP[1][3] + VP[1][2],
-	//	VP[2][3] + VP[2][2],
-	//	VP[3][3] + VP[3][2]);
-	//// 远平面
-	//planes[5] = glm::vec4(
-	//	VP[0][3] - VP[0][2],
-	//	VP[1][3] - VP[1][2],
-	//	VP[2][3] - VP[2][2],
-	//	VP[3][3] - VP[3][2]);
-
-
-	for (int i = 0; i < 6; i++) {
-		glm::vec3 normal = glm::vec3(planes[i]); // 平面的法向量部分
-		float length = glm::length(normal); // 计算法向量长度
-		normal /= length; // 规范化法向量
-		float distance = planes[i].w / length; // 计算距离
-
-		frustumPlanes[i].normal = RewVec3(normal);
-		frustumPlanes[i].distance = distance;
+		frustumDirty = false;
 	}
+
+	return &(this->frustum);
+}
+
+static int ccc = 0;
+void Camera::UpdateFrustum()
+{
+	this->frustum.UpdateFrustum(GetMatrixVP());
+
+	frustumDirty = false;
 }
 
 
 
 bool Camera::IsInFrustum(rew::AABB& aabb)
 {
-	CalculateFrustumPlanes();
-
-	for (int i = 0; i < 6; i++) {
-		rew::Vector3 normal = frustumPlanes[i].normal;
-		float distance = frustumPlanes[i].distance;
-
-		rew::Vector3 positiveVertex = aabb.center + rew::Vector3(
-			normal.x > 0 ? aabb.half_length.x : -aabb.half_length.x,
-			normal.y > 0 ? aabb.half_length.y : -aabb.half_length.y,
-			normal.z > 0 ? aabb.half_length.z : -aabb.half_length.z
-		);
-
-		if (rew::Vector3::Dot(normal, positiveVertex) + distance < 0) {
-			return false;
-		}
-	}
-	return true;
+	return GetFrustum()->IsInFrustum(aabb);
 }
-
-
 

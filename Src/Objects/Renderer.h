@@ -50,7 +50,7 @@ public:
 
 
 	//DrawCall  
-	virtual void Draw();
+	virtual void Draw(int submatidx, uint16 passidx);
 	virtual void DrawShadow();
 };
 
@@ -67,6 +67,6 @@ public:
 
 	virtual void UpdateAABB() ;
 
-	virtual void Draw() override;
+	virtual void Draw(int submatidx, uint16 passidx) override;
 	virtual void DrawShadow() override;
 };

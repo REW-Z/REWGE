@@ -112,12 +112,6 @@ public:
 	VisibleNode(Renderer* renderer);
 };
 
-//剔除模式  
-enum class CullMode
-{
-	Default,
-	Shadow,
-};
 //剔除结果
 class CullResult
 {

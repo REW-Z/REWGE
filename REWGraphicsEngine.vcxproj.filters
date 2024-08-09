@@ -15,175 +15,175 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Src\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Utils.cpp">
+    <ClCompile Include="Src\Utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\Mesh.cpp">
+    <ClCompile Include="Src\Objects\Mesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\Object.cpp">
+    <ClCompile Include="Src\Objects\Object.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\BaseComponents.cpp">
+    <ClCompile Include="Src\Objects\BaseComponents.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\GameObject.cpp">
+    <ClCompile Include="Src\Objects\GameObject.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\World.cpp">
+    <ClCompile Include="Src\Objects\World.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SubSystems\FileSystem.cpp">
+    <ClCompile Include="Src\SubSystems\FileSystem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SubSystems\Debug.cpp">
+    <ClCompile Include="Src\SubSystems\Debug.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SubSystems\Profiler.cpp">
+    <ClCompile Include="Src\SubSystems\Profiler.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SubSystems\ResourceManager.cpp">
+    <ClCompile Include="Src\SubSystems\ResourceManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Memory\Allocator.cpp">
+    <ClCompile Include="Src\Memory\Allocator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Application.cpp">
+    <ClCompile Include="Src\Application.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SubSystems\RenderSystem.cpp">
+    <ClCompile Include="Src\SubSystems\RenderSystem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SubSystems\InputManager.cpp">
+    <ClCompile Include="Src\SubSystems\InputManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\Camera.cpp">
+    <ClCompile Include="Src\Objects\Camera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\Light.cpp">
+    <ClCompile Include="Src\Objects\Light.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SubSystems\WorldManager.cpp">
+    <ClCompile Include="Src\SubSystems\WorldManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SubSystems\TimeManager.cpp">
+    <ClCompile Include="Src\SubSystems\TimeManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\Material.cpp">
+    <ClCompile Include="Src\Objects\Material.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\Texture.cpp">
+    <ClCompile Include="Src\Objects\Texture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\Renderer.cpp">
+    <ClCompile Include="Src\Objects\Renderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\Shader.cpp">
+    <ClCompile Include="Src\Objects\Shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Interfaces\GraphicAPI.cpp">
+    <ClCompile Include="Src\Interfaces\GraphicAPI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\RenderTexture.cpp">
+    <ClCompile Include="Src\Objects\RenderTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\FBO.cpp">
+    <ClCompile Include="Src\Rendering\FBO.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Objects\Camera.h">
+    <ClInclude Include="Src\Objects\Camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\Light.h">
+    <ClInclude Include="Src\Objects\Light.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h">
+    <ClInclude Include="Src\Utils.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\Mesh.h">
+    <ClInclude Include="Src\Objects\Mesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\Object.h">
+    <ClInclude Include="Src\Objects\Object.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\BaseComponents.h">
+    <ClInclude Include="Src\Objects\BaseComponents.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\GameObject.h">
+    <ClInclude Include="Src\Objects\GameObject.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\World.h">
+    <ClInclude Include="Src\Objects\World.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SubSystems\FileSystem.h">
+    <ClInclude Include="Src\SubSystems\FileSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SubSystems\ResourceManager.h">
+    <ClInclude Include="Src\SubSystems\ResourceManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SubSystems\Debug.h">
+    <ClInclude Include="Src\SubSystems\Debug.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SubSystems\Profiler.h">
+    <ClInclude Include="Src\SubSystems\Profiler.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Memory\Allocator.h">
+    <ClInclude Include="Src\Memory\Allocator.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="REWGE.h">
+    <ClInclude Include="Src\REWGE.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Memory\StackAllocator.hpp">
+    <ClInclude Include="Src\Memory\StackAllocator.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Application.h">
+    <ClInclude Include="Src\Application.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SubSystems\RenderSystem.h">
+    <ClInclude Include="Src\SubSystems\RenderSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SubSystems\InputManager.h">
+    <ClInclude Include="Src\SubSystems\InputManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SubSystems\WorldManager.h">
+    <ClInclude Include="Src\SubSystems\WorldManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SubSystems\TimeManager.h">
+    <ClInclude Include="Src\SubSystems\TimeManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\Material.h">
+    <ClInclude Include="Src\Objects\Material.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\Texture.h">
+    <ClInclude Include="Src\Objects\Texture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\Renderer.h">
+    <ClInclude Include="Src\Objects\Renderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\Shader.h">
+    <ClInclude Include="Src\Objects\Shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Interfaces\GraphicAPI.h">
+    <ClInclude Include="Src\Interfaces\GraphicAPI.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\RenderTexture.h">
+    <ClInclude Include="Src\Objects\RenderTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\FBO.h">
+    <ClInclude Include="Src\Rendering\FBO.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\BlinnPhong.frag.glsl" />
-    <None Include="Shaders\BlinnPhong.vert.glsl" />
-    <None Include="Shaders\Cubemap.frag.glsl" />
-    <None Include="Shaders\Cubemap.vert.glsl" />
-    <None Include="Shaders\Shadow.frag.glsl" />
-    <None Include="Shaders\Shadow.vert.glsl" />
+    <None Include="Src\Shaders\BlinnPhong.frag.glsl" />
+    <None Include="Src\Shaders\BlinnPhong.vert.glsl" />
+    <None Include="Src\Shaders\Cubemap.frag.glsl" />
+    <None Include="Src\Shaders\Cubemap.vert.glsl" />
+    <None Include="Src\Shaders\Shadow.frag.glsl" />
+    <None Include="Src\Shaders\Shadow.vert.glsl" />
     <None Include="lib\mono\4.5\mscorlib.dll" />
     <None Include="DLL\glew32.dll" />
     <None Include="cpp.hint" />

@@ -142,7 +142,7 @@ rew::AABB Renderer::GetWorldAABB()
 	return this->worldAABB;
 }
 
-void Renderer::Draw() //abstract
+void Renderer::Draw(int submatidx, uint16 passidx) //abstract
 {	
 	return;
 }
@@ -167,31 +167,56 @@ void MeshRenderer::UpdateAABB()
 		localAABB = mesh->CalculateAABB();
 
 
-		//std::cout << "CalLocalAABB:" << gameObject->name << std::endl;
+		//std::cout << std::endl << std::endl << "GO:" << gameObject->name << std::endl;
+		//std::cout << "rot:" << std::endl;
+		//std::cout << gameObject->transform->localEularAngles().x << "," << gameObject->transform->localEularAngles().y << "," << gameObject->transform->localEularAngles().z << std::endl;
+
+		//std::cout << "local AABB:" << std::endl;
 		//std::cout << "center:" << localAABB.center.x << "," << localAABB.center.y << "," << localAABB.center.z << std::endl;
 		//std::cout << "hextend:" << localAABB.half_length.x << "," << localAABB.half_length.y << "," << localAABB.half_length.z << std::endl;
 
-		//world
-		auto worldCenter = (gameObject->transform->GetLocalToWorldMat() * glm::vec4(localAABB.center.x, localAABB.center.y, localAABB.center.z, 1.0f));
-		auto worldHalfLen = (gameObject->transform->GetLocalToWorldMat() * glm::vec4(localAABB.half_length.x, localAABB.half_length.y, localAABB.half_length.z, 0.0f));
-		worldAABB.center = rew::Vector3(worldCenter.x, worldCenter.y, worldCenter.z);
-		worldAABB.half_length = rew::Vector3(worldHalfLen.x, worldHalfLen.y, worldHalfLen.z);
 
-		//std::cout << "CalAABB:" << gameObject->name << std::endl;
+
+		//TransformAABB算法    
+		{
+			// Mat Model2World
+			auto mat_m2w = gameObject->transform->GetLocalToWorldMat();
+
+			// Transform the center point
+			auto newcenter = (mat_m2w * glm::vec4(localAABB.center.x, localAABB.center.y, localAABB.center.z, 1.0f));
+
+			// Transform the half lengths (extents)
+			rew::Vector3 newHalfLength;
+			for (int i = 0; i < 3; ++i) {
+				auto xxx = mat_m2w[0, 0];
+				newHalfLength.x += std::abs(mat_m2w[i][0]) * localAABB.half_length.x;
+				newHalfLength.y += std::abs(mat_m2w[i][1]) * localAABB.half_length.y;
+				newHalfLength.z += std::abs(mat_m2w[i][2]) * localAABB.half_length.z;
+			}
+
+			// Set WorldAABB
+			worldAABB.center = RewVec3(glm::vec3(newcenter));
+			worldAABB.half_length = newHalfLength;
+		}
+
+		//std::cout << "AABB:" << std::endl;
 		//std::cout << "center:" << worldAABB.center.x << "  ,  " << worldAABB.center.y << "  ,  " << worldAABB.center.z << std::endl;
 		//std::cout << "hextend:" << worldAABB.half_length.x << "  ,  " << worldAABB.half_length.y << "  ,  " << worldAABB.half_length.z << std::endl;
+
+		this->isBoundsDirty = false;
 	}
 }
 
-void MeshRenderer::Draw()
+void MeshRenderer::Draw(int matidx, uint16 passidx)
 {
+	if (this->mesh == nullptr) return;
+
 	MeshRenderer* renderer = this;
 
 
 	//使用着色器 
-	//TODO:不同的材质使用不同着色器（而不是默认第0个）
 	assert(renderer->materials.size() > 0);
-	renderer->materials[0]->shader->passes[0]->Use();
+	renderer->materials[matidx]->shader->passes[passidx]->Use();
 
 	if (renderer != nullptr && renderer->mesh != nullptr)
 	{
@@ -214,19 +239,19 @@ void MeshRenderer::Draw()
 
 		assert(materials.size() > 0);//至少有一个材质  
 
-		mLoc = glGetUniformLocation(materials[0]->shader->passes[0]->renderProgram, "m_matrix");
-		vLoc = glGetUniformLocation(materials[0]->shader->passes[0]->renderProgram, "v_matrix");
-		mvLoc = glGetUniformLocation(materials[0]->shader->passes[0]->renderProgram, "mv_matrix");
-		projLoc = glGetUniformLocation(materials[0]->shader->passes[0]->renderProgram, "proj_matrix");
-		nLoc = glGetUniformLocation(materials[0]->shader->passes[0]->renderProgram, "norm_matrix");
-		sLoc = glGetUniformLocation(materials[0]->shader->passes[0]->renderProgram, "shadowMVP");
+		mLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "m_matrix");
+		vLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "v_matrix");
+		mvLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "mv_matrix");
+		projLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "proj_matrix");
+		nLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "norm_matrix");
+		sLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "shadowMVP");
 
-		envAmbLoc = glGetUniformLocation(materials[0]->shader->passes[0]->renderProgram, "env_ambient");
-		dirLightDirLoc = glGetUniformLocation(materials[0]->shader->passes[0]->renderProgram, "light.dir");
-		dirLightColorLoc = glGetUniformLocation(materials[0]->shader->passes[0]->renderProgram, "light.color");
+		envAmbLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "env_ambient");
+		dirLightDirLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "light.dir");
+		dirLightColorLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "light.color");
 
-		widthLoc = glGetUniformLocation(materials[0]->shader->passes[0]->renderProgram, "window_width");
-		heightLoc = glGetUniformLocation(materials[0]->shader->passes[0]->renderProgram, "window_height");
+		widthLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "window_width");
+		heightLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "window_height");
 
 
 
@@ -286,19 +311,21 @@ void MeshRenderer::Draw()
 
 		//绘制前绑定索引缓冲区
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->mesh->ebo);
+
 		size_t submeshCount = renderer->mesh->subMeshes.size();
 		GLuint lastCount = 0;
+		for (int i = 0; i < matidx; ++i) {
+			lastCount += (GLuint)(renderer->mesh->subMeshes[i].inds.size());
+		}
 
-		//cout << renderer->gameObject->name << "的子网格数量：" << submeshCount << endl;
-
-		for (size_t j = 0; j < submeshCount; j++)
+		//渲染子网格  
 		{
-			mAmbLoc = glGetUniformLocation(materials[j]->shader->passes[0]->renderProgram, "material.ambient");
-			mDiffLoc = glGetUniformLocation(materials[j]->shader->passes[0]->renderProgram, "material.diffuse");
-			mSpecLoc = glGetUniformLocation(materials[j]->shader->passes[0]->renderProgram, "material.specular");
-			mNsLoc = glGetUniformLocation(materials[j]->shader->passes[0]->renderProgram, "material.Ns");
+			mAmbLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "material.ambient");
+			mDiffLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "material.diffuse");
+			mSpecLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "material.specular");
+			mNsLoc = glGetUniformLocation(materials[matidx]->shader->passes[passidx]->renderProgram, "material.Ns");
 
-			Material* matOfSub = renderer->materials[j];
+			Material* matOfSub = renderer->materials[matidx];
 
 			glUniform4fv(mAmbLoc, 1, glm::value_ptr(matOfSub->ambient));
 			glUniform4fv(mDiffLoc, 1, glm::value_ptr(matOfSub->diffuse));
@@ -313,22 +340,22 @@ void MeshRenderer::Draw()
 			glActiveTexture(GL_TEXTURE3);			//纹理单元3-绑定物体法线贴图
 			glBindTexture(GL_TEXTURE_2D, matOfSub->textureBump->handle);
 
-			//std::cout << this->gameObject->name << "正在绘制子网格：" << j  <<  "三角形顶点数：" << renderer->mesh->subMeshes[j].inds.size() << std::endl;
+			//std::cout << this->gameObject->name << "正在绘制子网格：" << matidx  <<  "三角形顶点数：" << renderer->mesh->subMeshes[matidx].inds.size() << std::endl;
 
 			glDrawElements(
 				GL_TRIANGLES,
-				(GLuint)(renderer->mesh->subMeshes[j].inds.size()),
+				(GLuint)(renderer->mesh->subMeshes[matidx].inds.size()),
 				GL_UNSIGNED_INT,
-				(void*)(sizeof(GLuint) * lastCount)
+				(void*) (sizeof(GLuint) * lastCount)
 			);
-
-			lastCount += (GLuint)(renderer->mesh->subMeshes[j].inds.size());
 		}
 	}
 }
 
 void MeshRenderer::DrawShadow()
 {
+	if (this->mesh == nullptr) return;
+
 	MeshRenderer* renderer = this;
 
 	//使用着色器

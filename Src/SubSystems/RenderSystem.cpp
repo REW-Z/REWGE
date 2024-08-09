@@ -186,8 +186,8 @@ void  OpenglRenderSystem::Initialize()
 	//tex1 = texEmpty; tex2 = texEmpty;
 
 	//编译着色器（渲染程序）
-	this->shaderSkyBox = ResourceManager::Load(TypeEnum::TYPE_MaterialShader, "Shaders\\Cubemap") as(MaterialShader);
-	this->shaderShadow = ResourceManager::Load(TypeEnum::TYPE_MaterialShader, "Shaders\\Shadow") as(MaterialShader);
+	this->shaderSkyBox = ResourceManager::Load(TypeEnum::TYPE_MaterialShader, "Src\\Shaders\\Cubemap") as(MaterialShader);
+	this->shaderShadow = ResourceManager::Load(TypeEnum::TYPE_MaterialShader, "Src\\Shaders\\Shadow") as(MaterialShader);
 	//this->shaderBlinnPhong = ResourceManager::Load(TypeEnum::TYPE_Shader, "Shaders\\BlinnPhong") as(Shader);
 
 	//通用变量设置
@@ -305,40 +305,6 @@ VisibleNode::VisibleNode(Renderer* renderer)
 }
 
 
-void Cull(CullResult* cullresults, Camera* cam, CullMode mode)
-{
-	//Clear
-	cullresults->nodes.clear();
-
-	//Cull  
-	switch (mode)
-	{
-	case CullMode::Shadow:
-	{
-		auto renderers = RenderScene::Instance()->GetInSceneRenders();
-		for (auto it : *renderers)
-		{
-			cullresults->nodes.push_back(VisibleNode(it));
-		}
-	}
-	break;
-	case CullMode::Default:
-	default:
-	{
-		auto renderers = RenderScene::Instance()->GetInSceneRenders();
-		for (auto it : *renderers)
-		{
-			Renderer* renderer = it;
-			auto worldAABB = renderer->GetWorldAABB();
-			if (cam->IsInFrustum(worldAABB))
-			{
-				cullresults->nodes.push_back(VisibleNode(renderer));
-			}
-		}
-	}
-	break;
-	}
-}
 
 
 
@@ -420,7 +386,44 @@ CullResult* mainCullResult = NEW(CullResult) CullResult();
 
 
 
+//相机视锥剔除函数  
+void FrustumCull(CullResult* cullresults, Camera* cam)
+{
+	//Clear
+	cullresults->nodes.clear();
 
+	auto renderers = RenderScene::Instance()->GetInSceneRenders();
+	for (auto it : *renderers)
+	{
+		Renderer* renderer = it;
+		auto worldAABB = renderer->GetWorldAABB();
+		if (cam->IsInFrustum(worldAABB))
+		{
+			cullresults->nodes.push_back(VisibleNode(renderer));
+		}
+	}
+
+}
+//主光源剔除函数    
+void DirectLightShadowCull(CullResult* cullresults, Light* mainlight, Camera* cam)
+{
+	//Clear
+	cullresults->nodes.clear();
+
+	auto renderers = RenderScene::Instance()->GetInSceneRenders();
+	for (auto it : *renderers)
+	{
+		Renderer* renderer = it;
+		auto worldAABB = renderer->GetWorldAABB();
+
+		Frustum frustum;
+		frustum.UpdateFrustum(lightPmatrix * lightVmatrix);
+		if (frustum.IsInFrustum(worldAABB))
+		{
+			cullresults->nodes.push_back(VisibleNode(it));
+		}
+	}
+}
 
 //几何排序器  
 struct RenderObjectSorter
@@ -437,54 +440,6 @@ bool RenderObjectSorter::operator()(const RenderPass& ra, const RenderPass& rb) 
 }
 
 
-
-//渲染天空盒
-void pass_skybox()
-{
-}
-
-
-//阴影渲染
-void pass_shadow(Camera* cam)
-{
-	glClear(GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_CULL_FACE);
-	glFrontFace(GL_CCW);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
-
-	//Cull  
-	Cull(shadowCullResult, cam, CullMode::Shadow);
-
-	//Render  
-	for (auto it : shadowCullResult->nodes)
-	{
-		MeshRenderer* renderer = dynamic_cast<MeshRenderer*>(it.renderer);
-
-		if (renderer != nullptr && renderer->mesh != nullptr)
-		{
-			renderer->DrawShadow();
-		}
-	}
-}
-
-//主渲染PASS（渲染不透明物体）  
-void pass_main(Camera* cam, RenderQueue* queue)
-{
-	//设置
-	glEnable(GL_CULL_FACE);
-	glFrontFace(GL_CCW);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
-
-	for (auto& it : queue->plainRenderPasses)
-	{
-		auto& ro = queue->objects[it.roIndex];
-		Renderer* renderer = ro.visibleNode->renderer;
-
-		renderer->Draw();
-	}
-}
 
 
 //渲染相机
@@ -515,7 +470,7 @@ void RenderCamera(Camera* cam)
 
 	{
 		//摄像机剔除      
-		Cull(mainCullResult, cam, CullMode::Default);
+		FrustumCull(mainCullResult, cam);
 
 		//初始化RenderObject列表  
 		for (int i = 0; i < mainCullResult->nodes.size(); ++i)
@@ -549,6 +504,7 @@ void RenderCamera(Camera* cam)
 			}
 		}
 
+
 		//几何排序  
 		RenderObjectSorter sorter;
 		sorter.queue = &queue;
@@ -556,7 +512,7 @@ void RenderCamera(Camera* cam)
 	}
 
 
-	//********** 天空盒 *********************************
+	//********** 渲染：天空盒 *********************************
 	RenderSystem::Instance()->shaderSkyBox->passes[0]->Use();
 
 
@@ -588,7 +544,7 @@ void RenderCamera(Camera* cam)
 	//****************************************************
 
 
-	//**********  PASS_SHADOW  ******************************
+	//**********  渲染：主光源阴影  ******************************
 
 	//光源获取
 	Light* mainLight = RenderScene::Instance()->mainLight;
@@ -607,12 +563,33 @@ void RenderCamera(Camera* cam)
 	glEnable(GL_POLYGON_OFFSET_FILL);	// 开启深度偏移
 	glPolygonOffset(1.0f, 2.0f);		//  深度偏移
 
-	pass_shadow(cam);
+	//渲染阴影  
+	{
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_CULL_FACE);
+		glFrontFace(GL_CCW);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+
+		//光源投影物剔除    
+		Light* mainLight = RenderScene::Instance()->mainLight;
+		DirectLightShadowCull(shadowCullResult, mainLight, cam);
+
+		//Render  
+		for (auto it : shadowCullResult->nodes)
+		{
+			Renderer* renderer = it.renderer;
+			if (renderer != nullptr)
+			{
+				renderer->DrawShadow();
+			}
+		}
+	}
 
 	glDisable(GL_POLYGON_OFFSET_FILL);	// 关闭深度偏移
 	//***************************************************
 
-	//**********  PASS_MAIN  ******************************
+	//**********  渲染：物体  ****************************
 
 	//绑定当前相机的帧缓冲
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -624,7 +601,23 @@ void RenderCamera(Camera* cam)
 
 	glDrawBuffer(GL_FRONT);//重新开启绘制颜色
 
-	//pass
-	pass_main(cam, &queue);
+
+	//渲染可见物体  
+	{
+		//设置
+		glEnable(GL_CULL_FACE);
+		glFrontFace(GL_CCW);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+
+		for (auto& it : queue.plainRenderPasses)
+		{
+			auto& ro = queue.objects[it.roIndex];
+			Renderer* renderer = ro.visibleNode->renderer;
+
+			renderer->Draw(ro.subsetIndex, it.passNumber);
+		}
+	}
+
 	//***************************************************
 }
