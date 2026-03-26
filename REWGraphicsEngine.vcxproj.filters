@@ -93,6 +93,9 @@
     <ClCompile Include="Src\Rendering\FBO.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Src\SubSystems\AssetPipeline.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Objects\Camera.h">
@@ -174,6 +177,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Src\Rendering\FBO.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SubSystems\AssetPipeline.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

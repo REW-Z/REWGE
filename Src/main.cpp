@@ -45,6 +45,7 @@
 #include "Objects/World.h"  
 
 #include "SubSystems/FileSystem.h"
+#include "SubSystems/AssetPipeline.h"
 #include "SubSystems/ResourceManager.h"
 #include "SubSystems/Debug.h"
 #include "SubSystems/Profiler.h"
@@ -98,10 +99,10 @@ void sceneInit()
 	RenderSystem::Instance()->mainCamera = camCom;
 	RenderScene::Instance()->mainLight = lightCom;
 
-	GameObject* obj0 = ResourceImporter::ImportObjModel("Resources\\plane.obj");
-	GameObject* obj1 = ResourceImporter::ImportObjModel("Resources\\sundial.obj");
-	GameObject* obj2 = ResourceImporter::ImportObjModel("Resources\\cubes.obj");
-	GameObject* obj3 = ResourceImporter::ImportObjModel("Resources\\Bomber.obj");
+	GameObject* obj0 = AssetPipeline::Import_OBJ("Resources\\plane.obj");
+	GameObject* obj1 = AssetPipeline::Import_OBJ("Resources\\sundial.obj");
+	GameObject* obj2 = AssetPipeline::Import_OBJ("Resources\\cubes.obj");
+	GameObject* obj3 = AssetPipeline::Import_OBJ("Resources\\Bomber.obj");
 
 	WorldManager::Instance().currentWorld.AddGameObject(*obj0);
 	WorldManager::Instance().currentWorld.AddGameObject(*obj1);
