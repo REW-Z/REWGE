@@ -194,7 +194,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
-    <None Include="DLL\glew32.dll" />
+    <CopyFileToFolders Include="DLL\glew32.dll">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
     <None Include="lib\mono\4.5\mscorlib.dll" />
     <None Include="Src\Shaders\BlinnPhong.frag.glsl" />
     <None Include="Src\Shaders\BlinnPhong.vert.glsl" />
@@ -202,11 +204,7 @@
     <None Include="Src\Shaders\Cubemap.vert.glsl" />
     <None Include="Src\Shaders\Shadow.frag.glsl" />
     <None Include="Src\Shaders\Shadow.vert.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\REWCPPL\REWCPPL.vcxproj">
-      <Project>{4a17dba9-2c5e-40b3-88b7-181a0b09587a}</Project>
-    </ProjectReference>
+    <None Include="重构计划文档.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

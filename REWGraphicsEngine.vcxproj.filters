@@ -191,7 +191,10 @@
     <None Include="Src\Shaders\Shadow.frag.glsl" />
     <None Include="Src\Shaders\Shadow.vert.glsl" />
     <None Include="lib\mono\4.5\mscorlib.dll" />
-    <None Include="DLL\glew32.dll" />
     <None Include="cpp.hint" />
+    <None Include="重构计划文档.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="DLL\glew32.dll" />
   </ItemGroup>
 </Project>
